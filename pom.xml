@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+        <groupId>org.codehaus.fabric3</groupId>
+        <artifactId>fabric3-extension-cache-parent-pom</artifactId>
+        <version>1.9.5-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.codehaus.fabric3</groupId>
+  <description>Coherence-based cache</description>
+  <name>Fabric3 Cache Coherence Extension</name>
+  <artifactId>fabric3-cache-coherence</artifactId>
+  <packaging>sca-contribution-jar</packaging>
+  
+  <properties>
+    <junit.version>3.8.2</junit.version>
+    <mock.version>3.0</mock.version>
+    <jta.version>1.1.1</jta.version>
+    <coherence.version>3.7.1</coherence.version>
+  </properties>
+  
+   <dependencies>
+         
+    <dependency>
+	    <groupId>com.oracle.coherence</groupId>
+	    <artifactId>coherence</artifactId>
+	    <version>${coherence.version}</version>
+	</dependency>
+		
+	<dependency>
+	    <groupId>com.oracle.coherence</groupId>
+	    <artifactId>coherence-common</artifactId>
+	    <version>2.1.0.27679</version>
+	</dependency>
+		
+        <dependency>
+            <groupId>org.codehaus.fabric3</groupId>
+            <artifactId>fabric3-resource</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.fabric3</groupId>
+            <artifactId>fabric3-spi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.fabric3</groupId>
+            <artifactId>fabric3-cache</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>${mock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.codehaus.fabric3</groupId>
+            <artifactId>fabric3-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+    </dependencies>
+         
+   <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.fabric3</groupId>
+                <artifactId>fabric3-contribution-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>            
+        </plugins>
+    </build>
+    
+</project>

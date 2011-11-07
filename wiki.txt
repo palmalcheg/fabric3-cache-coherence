@@ -1,0 +1,56 @@
+h2.Extending Fabric3 using Cache SPI
+
+h3.Core Interfaces Used for Implementation
+
+h4.Introspection SPI
+||Interface||Description||
+|*org.fabric3.spi.introspection.xml.TypeLoader*| _TypeLoader_ is entry point SCA composite inspection. As a part of Cache SPI it is used to detect what provider will be used to create caches , e.g  the following configuration 
+    {code:xml} <f3:caches>
+        <f3:cache name="dataIndexCache">
+          <f3:coherence>
+           
+           <cache-mapping>
+	            <cache-name>dataIndexCacheOnCoherence</cache-name>
+	            <scheme-name>RAM-scheme</scheme-name>
+           </cache-mapping>
+          
+          <ramjournal-scheme>
+		     <scheme-name>RAM-scheme</scheme-name>
+	      </ramjournal-scheme>
+          
+          </f3:coherence>
+        </f3:cache>        
+        
+    </f3:caches>{code} will result in invocation of _TypeLoader_ capable to handle *f3:coherence* , thus Coherence infrustructure will be used for that cache |
+
+h4.Cache SPI
+||Interface||Description||
+|*org.fabric3.cache.spi.CacheResourceDefinition*|Implementation created at stage of parsing SCA composite by _org.fabric3.spi.introspection.xml.TypeLoader_|
+|*org.fabric3.cache.spi.PhysicalCacheResourceDefinition*| Provider specific cache configuration implementation  |
+|*org.fabric3.cache.spi.CacheResourceGenerator*|Implemetation for conversion _org.fabric3.cache.spi.CacheResourceDefinition_ to _org.fabric3.cache.spi.PhysicalCacheResourceDefinition_  , this is the way on how configuration is transfering from SCA composite to designated Cache provider.|
+|*org.fabric3.cache.spi.CacheManager*|Main interface , resposible for configuring (parsing , composing) data provided by _org.fabric3.cache.spi.PhysicalCacheResourceDefinition_ and producing provider-dependent cache instances|
+|*org.fabric3.cache.spi.CacheBuilder*|Implemetation is used to inject  _org.fabric3.cache.spi.PhysicalCacheResourceDefinition_  into _org.fabric3.cache.spi.CacheManager_ |
+
+h3.Implementation ( [Coherence Grid|http://coherence.oracle.com/display/COH/Oracle+Coherence+Knowledge+Base+Home] )
+
+All the mentioned interfaces have their implementations as a part of Coherence Cache Extension, but _CacheManager_ and _PhysicalCacheResourceDefinition_ ones were highly influenced by the provider internal API.
+
+First thing has to be done to make extension available is an installation of Coherence distribution to maven repository :
+** Download  [Coherence distribution|http://coherence.oracle.com/display/COH/Oracle+Coherence+Knowledge+Base+Home] and [coherence-common|http://coherence.oracle.com/display/INC10/coherence-common]
+** Install those downloads to you maven repository with a help of [mvn install:install-file|http://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html ] guide.
+
+h4.Registering Extension within *Fabric3*
+All the following files *MUST BE* placed in *META-INF* folder of Extension distribution.
+||SCA artifact|| Description ||
+|sca-contibution.xml| Describes various metadata , like import/export packages, 'SCA-composite' names used by extension and so on.|
+|controller.composite| Register Controller node functionality |
+|participant.composite|  Register Participant node functionality |
+
+h4.iTesting
+To utilize *com.tangosol.net.NamedCache* or any other Coherence specific interface, one must import corresponding package to a iTest contribution , e.g
+||SCA artifact|| Description ||
+|META-INF/sca-contibution.xml| {code:xml} <?xml version="1.0" encoding="UTF-8"?>
+<contribution xmlns="http://docs.oasis-open.org/ns/opencsa/sca/200912">
+    <import.java package="com.tangosol.*" />
+    <import.java package="com.oracle.*" />
+</contribution> {code}|
