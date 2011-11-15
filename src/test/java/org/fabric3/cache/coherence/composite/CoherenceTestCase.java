@@ -113,7 +113,7 @@ public class CoherenceTestCase extends TestCase {
         Document doc = EasyMock.createMock(Document.class);
         EasyMock.expect(loaderHelper.transform(reader)).andReturn(doc);
         
-        EasyMock.replay(loaderHelper);
+        EasyMock.replay(loaderHelper); 
         new CoherenceTypeLoader(loaderHelper).load(reader, context);
         EasyMock.verify(loaderHelper);
 	}

@@ -72,8 +72,8 @@ import com.tangosol.run.xml.XmlHelper;
  */
 @EagerInit
 public class CoherenceCacheManager implements CacheManager<CoherencePhysicalResourceDefinition> {
-
-    private ExtensibleEnvironment environment;
+	
+	private ExtensibleEnvironment environment;
 
     private Map<String, ConfigurationPair> caches = new ConcurrentHashMap<String, ConfigurationPair>();
 
@@ -88,8 +88,8 @@ public class CoherenceCacheManager implements CacheManager<CoherencePhysicalReso
 
     @Init
     public void startManager() {
-        this.environment = new ExtensibleEnvironment("coherence-cache-config.xml",getClass().getClassLoader());
-        globalConfiguration = this.environment.getConfig();
+        this.environment = new ExtensibleEnvironment();
+        globalConfiguration = environment.getConfig();
     }
 
     public XmlElement updateEnvironmentConfiguration(XmlElement cfg, CoherencePhysicalResourceDefinition configuration, ConfigurationPair pair)
@@ -106,6 +106,8 @@ public class CoherenceCacheManager implements CacheManager<CoherencePhysicalReso
                 throw new CacheBuildException(e);
             }
         } else {
+        	XmlHelper.azzert("cache-config".equals(cfg.getName()));
+            XmlElement cm = cfg.findElement("caching-scheme-mapping");
             List<XmlElement> elements = xml.getElementList();
             XmlElement cs = cfg.findElement("caching-schemes");
             for (XmlElement e : elements) {
@@ -113,12 +115,8 @@ public class CoherenceCacheManager implements CacheManager<CoherencePhysicalReso
                     updateConfiguration(cs, e);
                 }
             }
-            XmlHelper.azzert("cache-config".equals(cfg.getName()));
-            XmlElement cm = cfg.findElement("caching-scheme-mapping");
-
             updateConfiguration(cm, cacheMapping);
             XmlElement physicalCacheName = cacheMapping.findElement("cache-name");
-            
             if (pair!=null) {
                 pair.physicalCache = physicalCacheName != null ? physicalCacheName.getString() : null;
             }
@@ -142,7 +140,8 @@ public class CoherenceCacheManager implements CacheManager<CoherencePhysicalReso
     public NamedCache getCache(String name) {        
         if (!isConfigurationLoaded.getAndSet(true)) {
             // TODO: initialize environment as a part of composite lifecycle, not by switcher  
-            environment.setConfig(globalConfiguration);    
+            environment.setConfig(globalConfiguration);
+            CacheFactory.setConfigurableCacheFactory(environment);
         }
         ConfigurationPair pair = caches.get(name);
         if (pair == null) {
